@@ -1,0 +1,94 @@
+# Default values for gitolite.
+# This is a YAML-formatted file.
+# Declare name/value pairs to be passed into your templates.
+# name: value
+
+Name: gitolite
+Image: "jgiannuzzi/gitolite"
+ImageTag: "latest"
+ImagePullPolicy: "IfNotPresent"
+Component: "gitolite"
+Cpu: "200m"
+Memory: "256Mi"
+ServicePort: 22
+# For minikube, set this to NodePort, elsewhere use LoadBalancer
+# Use ClusterIP if your setup includes ingress controller
+ServiceType: LoadBalancer
+ServiceAnnotations: {}
+  #   service.beta.kubernetes.io/aws-load-balancer-backend-protocol: https
+# Used to create Ingress record (should used with ServiceType: ClusterIP)
+# HostName: gitolite.cluster.local
+# NodePort: <to set explicitly, choose port between 30000-32767
+ContainerPort: 22
+LoadBalancerSourceRanges:
+- 0.0.0.0/0
+# Optionally assign a known public LB IP
+# LoadBalancerIP: 1.2.3.4
+# Node labels and tolerations for pod assignment
+# ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
+# ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#taints-and-tolerations-beta-feature
+NodeSelector: {}
+Tolerations: {}
+
+Ingress:
+  Annotations:
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+
+  TLS:
+    # - secretName: gitolite.cluster.local
+    #   hosts:
+    #     - gitolite.cluster.local
+
+Persistence:
+  SshKeys:
+    Enabled: true
+    ## A manually managed Persistent Volume and Claim
+    ## Requires Persistence.Enabled: true
+    ## If defined, PVC must be created manually before volume will be bound
+    # ExistingClaim:
+
+    ## Persistent Volume Storage Class
+    ## If defined, storageClassName: <storageClass>
+    ## If set to "-", storageClassName: "", which disables dynamic provisioning
+    ## If undefined (the default) or set to null, no storageClassName spec is
+    ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
+    ##   GKE, AWS & OpenStack)
+    ##
+    # StorageClass: "-"
+
+    AccessMode: ReadWriteOnce
+    Size: 1Gi
+  Git:
+    Enabled: true
+    ## A manually managed Persistent Volume and Claim
+    ## Requires Persistence.Enabled: true
+    ## If defined, PVC must be created manually before volume will be bound
+    # ExistingClaim:
+  
+    ## Persistent Volume Storage Class
+    ## If defined, storageClassName: <storageClass>
+    ## If set to "-", storageClassName: "", which disables dynamic provisioning
+    ## If undefined (the default) or set to null, no storageClassName spec is
+    ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
+    ##   GKE, AWS & OpenStack)
+    ##
+    # StorageClass: "-"   
+
+    AccessMode: ReadWriteOnce
+    Size: 8Gi
+  volumes:
+#  - name: nothing
+#    emptyDir: {}
+  mounts:
+#  - mountPath: /var/nothing
+#    name: nothing
+#    readOnly: true
+
+NetworkPolicy:
+  # Enable creation of NetworkPolicy resources.
+  Enabled: false
+  # For Kubernetes v1.4, v1.5 and v1.6, use 'extensions/v1beta1'
+  # For Kubernetes v1.7, use 'networking.k8s.io/v1'
+  ApiVersion: extensions/v1beta1
+

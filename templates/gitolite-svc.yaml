@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{template "gitolite.fullname" . }}
+  labels:
+    app: {{ template "gitolite.fullname" . }}
+    heritage: {{.Release.Service | quote }}
+    release: {{.Release.Name | quote }}
+    chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+    component: "{{.Release.Name}}-{{.Values.Component}}"
+{{- if .Values.ServiceAnnotations }}
+  annotations:
+{{ toYaml .Values.ServiceAnnotations | indent 4 }}
+{{- end }}
+spec:
+  ports:
+    - port: {{.Values.ServicePort}}
+      name: http
+      targetPort: {{.Values.ContainerPort}}
+      {{if (and (eq .Values.ServiceType "NodePort") (not (empty .Values.NodePort)))}}
+      nodePort: {{.Values.NodePort}}
+      {{end}}
+  selector:
+    component: "{{.Release.Name}}-{{.Values.Component}}"
+  type: {{.Values.ServiceType}}
+  {{if eq .Values.ServiceType "LoadBalancer"}}
+  loadBalancerSourceRanges: {{.Values.LoadBalancerSourceRanges}}
+  {{if .Values.LoadBalancerIP}}
+  loadBalancerIP: {{.Values.LoadBalancerIP}}
+  {{end}}
+  {{end}}

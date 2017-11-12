@@ -1,0 +1,5 @@
+###########################################
+If using glusterfs with XFS you need to run
+chmod 755 /var/lib/git
+###########################################
+Done

@@ -1,0 +1,14 @@
+name: gitolite
+home: http://gitolite.com
+version: 0.0.1
+appVersion: 3.6.7
+description: Hosting git repositories -- Gitolite allows you to setup git hosting on
+  a central server, with very fine-grained access control and many (many!) more
+  powerful features.
+sources:
+- https://github.com/sitaramc/gitolite
+- https://github.com/jgiannuzzi/docker-gitolite
+maintainers:
+- name: amiga23
+  email: amiga@scheller.es
+#icon: https://gitolite.com/logo.png

@@ -1,0 +1,24 @@
+{{- if and .Values.Persistence.Git.Enabled (not .Values.Persistence.ExistingClaim) -}}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ template "gitolite.claimname.git" . }}
+  labels:
+    app: {{ template "gitolite.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  accessModes:
+    - {{ .Values.Persistence.Git.AccessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.Persistence.Git.Size | quote }}
+{{- if .Values.Persistence.Git.StorageClass }}
+{{- if (eq "-" .Values.Persistence.Git.StorageClass) }}
+  storageClassName: ""
+{{- else }}
+  storageClassName: "{{ .Values.Persistence.Git.StorageClass }}"
+{{- end }}
+{{- end }}
+{{- end }}

@@ -1,0 +1,73 @@
+a;5ApiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "gitolite.fullname" . }}
+  labels:
+    heritage: {{ .Release.Service | quote }}
+    release: {{ .Release.Name | quote }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    component: "{{ .Release.Name }}-{{ .Values.Name }}"
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      component: "{{ .Release.Name }}-{{ .Values.Component }}"
+  template:
+    metadata:
+      labels:
+        app: {{ template "gitolite.fullname" . }}
+        heritage: {{ .Release.Service | quote }}
+        release: {{ .Release.Name | quote }}
+        chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+        component: "{{ .Release.Name }}-{{ .Values.Component }}"
+    spec:
+      {{- if .Values.NodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.NodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.Tolerations }}
+      tolerations:
+{{ toYaml .Values.Tolerations | indent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ template "gitolite.fullname" . }}
+          image: "{{ .Values.Image }}:{{ .Values.ImageTag }}"
+          imagePullPolicy: "{{ .Values.ImagePullPolicy }}"
+          env:
+            - name: SSH_KEY
+              value: "{{ default "" .Values.SSH_KEY}}"
+            - name: SSH_KEY_NAME
+              value: "{{ default "admin" .Values.SSH_KEY_NAME}}"
+          ports:
+            - containerPort: {{ .Values.ContainerPort }}
+              name: ssh
+          resources:
+            requests:
+              cpu: "{{ .Values.Cpu }}"
+              memory: "{{ .Values.Memory }}"
+          volumeMounts:
+{{- if .Values.Persistence.mounts }}
+{{ toYaml .Values.Persistence.mounts | indent 12 }}
+{{- end }}
+            -
+              mountPath: /etc/ssh/keys
+              name: gitolite-ssh-keys
+              readOnly: false
+            -
+              mountPath: /var/lib/git
+              name: gitolite-git
+              readOnly: false
+      volumes:
+      - name: gitolite-ssh-keys
+        persistentVolumeClaim:
+          claimName: {{ .Values.Persistence.SshKeys.ExistingClaim | default (include "gitolite.claimname.ssh-keys" .) }}
+      - name: gitolite-git
+      {{- if .Values.Persistence.Git.Enabled }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.Persistence.Git.ExistingClaim | default (include "gitolite.claimname.git" .) }}
+      {{- else }}
+        emptyDir: {}
+      {{- end -}}
+

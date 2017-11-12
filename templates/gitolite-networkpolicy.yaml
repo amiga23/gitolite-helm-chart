@@ -1,0 +1,14 @@
+{{- if .Values.NetworkPolicy.Enabled }}
+kind: NetworkPolicy
+apiVersion: {{ .Values.NetworkPolicy.ApiVersion }}
+metadata:
+  name: "{{ .Release.Name }}-{{ .Values.Component }}"
+spec:
+  podSelector:
+    matchLabels:
+      component: "{{ .Release.Name }}-{{ .Values.Component }}"
+  ingress:
+    # Allow web access to the UI
+    - ports:
+      - port: {{ .Values.ContainerPort }}
+{{- end }}

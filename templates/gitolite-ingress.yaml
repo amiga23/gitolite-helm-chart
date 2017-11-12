@@ -1,0 +1,22 @@
+{{- if .Values.HostName }}
+apiVersion: {{ .Values.NetworkPolicy.ApiVersion }}
+kind: Ingress
+metadata:
+{{- if .Values.Ingress.Annotations }}
+  annotations:
+{{ toYaml .Values.Ingress.Annotations | indent 4 }}
+{{- end }}
+  name: {{ template "gitolite.fullname" . }}
+spec:
+  rules:
+  - host: {{ .Values.HostName | quote }}
+    http:
+      paths:
+      - backend:
+          serviceName: {{ template "gitolite.fullname" . }}
+          servicePort: {{ .Values.ServicePort }}
+{{- if .Values.Ingress.TLS }}
+  tls:
+{{ toYaml .Values.Ingress.TLS | indent 4 }}
+{{- end -}}
+{{- end }}

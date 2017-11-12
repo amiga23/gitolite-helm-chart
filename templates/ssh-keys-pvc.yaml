@@ -1,0 +1,24 @@
+{{- if and .Values.Persistence.SshKeys.Enabled (not .Values.Persistence.ExistingClaim) -}}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ template "gitolite.claimname.ssh-keys" . }}
+  labels:
+    app: {{ template "gitolite.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  accessModes:
+    - {{ .Values.Persistence.SshKeys.AccessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.Persistence.SshKeys.Size | quote }}
+{{- if .Values.Persistence.SshKeys.StorageClass }}
+{{- if (eq "-" .Values.Persistence.SshKeys.StorageClass) }}
+  storageClassName: ""
+{{- else }}
+  storageClassName: "{{ .Values.Persistence.SshKeys.StorageClass }}"
+{{- end }}
+{{- end }}
+{{- end }}

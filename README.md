@@ -100,8 +100,10 @@ It is possible to mount several volumes using `Persistence.volumes` and `Persist
 
 ### Additional volumes/mounts
 
-| `Persistence.volumes`       | Additional volumes            | `nil`           |
-| `Persistence.mounts`        | Additional mounts             | `nil`           |
+| Parameter                   | Description               | Default         |
+| ----------------------------| ------------------------- | --------------- |
+| `Persistence.volumes`       | Additional volumes        | `nil`           |
+| `Persistence.mounts`        | Additional mounts         | `nil`           |
 
 #### Existing PersistentVolumeClaim
 

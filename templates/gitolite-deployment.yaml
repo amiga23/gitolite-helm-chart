@@ -59,6 +59,18 @@ spec:
               mountPath: /var/lib/git
               name: gitolite-git
               readOnly: false
+      initContainers:
+        - name: setup
+          image: busybox
+          command:
+            - chmod
+            - 755
+            - /var/lib/git
+          volumeMounts:
+            - 
+              mountPath: /var/lib/git
+              name: gitolite-git
+              readOnly: false
       volumes:
       - name: gitolite-ssh-keys
         persistentVolumeClaim:

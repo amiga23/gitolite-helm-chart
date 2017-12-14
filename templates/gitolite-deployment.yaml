@@ -63,9 +63,9 @@ spec:
         - name: setup
           image: busybox
           command:
-            - chmod
-            - 755
-            - /var/lib/git
+            - "chmod"
+            - "755"
+            - "/var/lib/git"
           volumeMounts:
             - 
               mountPath: /var/lib/git
